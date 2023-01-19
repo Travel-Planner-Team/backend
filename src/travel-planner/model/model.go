@@ -19,7 +19,10 @@ type UserStub struct {
 }
 
 type User struct {
-	Id       uint
-	Email    string
-	Password string
+	Id       string    `json:"id"`
+	Email    string  `json:"email"`
+	Password string   `json:"password"`
+	Username string `json:"username"`
+	Age      int64  `json:"age"`
+	Gender   string `json:"gender"`
 }
