@@ -64,32 +64,61 @@ func InitPlanHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Plan had been init"))
 }
 
-func MakeRouteForVacation(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Received request: /vacation/{vacation_id}/plan/routes")
-	w.Write([]byte("Potential Routes Sent"))
-}
+// func MakeRouteForVacation(w http.ResponseWriter, r *http.Request) {
+// 	fmt.Println("Received request: /vacation/{vacation_id}/plan/routes")
+// 	w.Write([]byte("Potential Routes Sent"))
+// }
 
 func GetVacationPlanHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Received request: /vacation/{vacation_id}/plan")
-	vacationID := r.Context().Value("vacation_id")
+	vacationID := r.URL.Query().Get("vacation_id")
 	fmt.Printf("vacationID: %v\n", vacationID)
 	w.Header().Set("Content_Type", "application/json")
-	// Create a slice of activities
-	activities := []model.Activity{
-		{Id: 1, StartTime: time.Now(), EndTime: time.Now().Add(time.Hour), Date: time.Now(), Duration: 3600, Site_id: 100},
-		{Id: 2, StartTime: time.Now().Add(time.Hour * 2), EndTime: time.Now().Add(time.Hour * 3), Date: time.Now(), Duration: 3600, Site_id: 200},
-		{Id: 3, StartTime: time.Now().Add(time.Hour * 4), EndTime: time.Now().Add(time.Hour * 5), Date: time.Now(), Duration: 3600, Site_id: 300},
-	}
-
+	// get plans
+	intId ,_:=strconv.ParseInt(vacationID, 0, 64)
+	pasedId := uint32(intId)
+	plans,err := service.GetPlanInfoFromVactionId(pasedId)
 	// Marshal the activities to JSON
-	jsonData, err := json.Marshal(activities)
+	jsonData, err := json.Marshal(plans)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
 	// Write the JSON data to the response
 	w.Write(jsonData)
+	
+	// plan details： activities + transportations
+	// get each slice of plans
+	for i := 0; i < len(plans); i++ {
+		plan := &plans[i]
+		fmt.Println(plan.Id)
+		intId ,_:=strconv.ParseInt(plan.Id, 0, 64)
+		pasedId := uint32(intId)
+
+		// get []activities
+		activities,err := service.GetActivitiesInfoFromPlanId(pasedId)
+		jsonData, err := json.Marshal(activities)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Write(jsonData)
+
+		// get []transportations
+		transportations,err := service.GetTransportationFromPlanId(pasedId)
+		jsonData, err = json.Marshal(transportations)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Write(jsonData)
+	}
+	// Create a slice of activities
+	// activities := []model.Activity{
+	// 	{Id: 1, StartTime: time.Now(), EndTime: time.Now().Add(time.Hour), Date: time.Now(), Duration: 3600, Site_id: 100},
+	// 	{Id: 2, StartTime: time.Now().Add(time.Hour * 2), EndTime: time.Now().Add(time.Hour * 3), Date: time.Now(), Duration: 3600, Site_id: 200},
+	// 	{Id: 3, StartTime: time.Now().Add(time.Hour * 4), EndTime: time.Now().Add(time.Hour * 5), Date: time.Now(), Duration: 3600, Site_id: 300},
+	// }
 }
 
 func SaveActivitiesHandler(w http.ResponseWriter, r *http.Request) {

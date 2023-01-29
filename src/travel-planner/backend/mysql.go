@@ -5,6 +5,7 @@ import (
 	"travel-planner/constants"
 	"travel-planner/model"
 	"travel-planner/util"
+
 	//"travel_planner/handler"
 
 	"errors"
@@ -115,14 +116,34 @@ func (backend *MySQLBackend) SaveVacation(vacation *model.Vacation) (bool, error
 	return true, nil
 }
 
-func (backend *MySQLBackend) GetActivityFromPlanId(plan_id uint32) ([]model.Activity, error) {
+func (backend *MySQLBackend) GetActivityFromPlanId(planId uint32) ([]model.Activity, error) {
 	var activities []model.Activity
-	result := backend.db.Table("Activity").Find(&activities)
+	result := backend.db.Table("Activities").Where("plan_id = ?", planId).Find(&activities)
 	fmt.Print(activities, result)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	return activities, nil
+}
+
+func (backend *MySQLBackend) GetTransportationFromPlanId(planId uint32) ([]model.Transportaion, error) {
+	var transportations []model.Transportaion
+	result := backend.db.Table("Transportations").Where("plan_id = ?", planId).Find(&transportations)
+	fmt.Print(transportations, result)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return transportations, nil
+}
+
+func (backend *MySQLBackend) GetPlanFromVacationId(vacationId uint32) ([]model.Plan, error) {
+	var plans []model.Plan
+	result := backend.db.Table("Plans").Where("vacation_id = ?", vacationId).Find(&plans)
+	fmt.Print(plans, result)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return plans, nil
 }
 
 func (backend *MySQLBackend) SaveSites(sites []model.Site) (bool, error) {

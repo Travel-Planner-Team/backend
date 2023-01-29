@@ -94,6 +94,7 @@ type Plan struct {
 	VacationId string    `json:"VacationId"`
 }
 
+
 type Activity struct {
 	Id        uint32    `json:"id"`
 	StartTime time.Time `json:"start_time"`

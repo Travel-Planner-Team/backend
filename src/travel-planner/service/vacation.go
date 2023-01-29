@@ -23,8 +23,8 @@ func AddVacation(vacation *model.Vacation) (bool, error) {
 	return success, err
 }
 
-func GetActivitiesInfoFromPlanId(plan_id uint32) ([]model.Activity, error) {
-	activities, err := backend.DB.GetActivityFromPlanId(plan_id)
+func GetActivitiesInfoFromPlanId(planId uint32) ([]model.Activity, error) {
+	activities, err := backend.DB.GetActivityFromPlanId(planId)
 	if err != nil {
 		return nil, err
 	}
@@ -39,3 +39,28 @@ func SaveVacationPlan(plan model.Plan) (error) {
 	err := backend.DB.SaveVacationPlanToSQL(plan)
 	return err
 }
+
+func GetPlanInfoFromVactionId(vacationId uint32) ([]model.Plan, error) {
+	plans, err := backend.DB.GetPlanFromVacationId(vacationId)
+	if err != nil {
+		return nil, err
+	}
+
+	if plans== nil || len(plans) == 0 {
+		return nil, errors.New("empty or invalid plan, check the Database")
+	}
+	return plans, nil
+}
+
+func GetTransportationFromPlanId(planId uint32) ([]model.Transportaion, error) {
+	transportations, err := backend.DB.GetTransportationFromPlanId(planId)
+	if err != nil {
+		return nil, err
+	}
+
+	if transportations == nil || len(transportations) == 0 {
+		return nil, errors.New("empty or invalid vacations, check the Database")
+	}
+	return transportations, nil
+}
+
