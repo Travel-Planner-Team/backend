@@ -22,3 +22,5 @@ func AddVacation(vacation *model.Vacation) (bool, error) {
 	success, err := backend.DB.SaveVacation(vacation)
 	return success, err
 }
+
+

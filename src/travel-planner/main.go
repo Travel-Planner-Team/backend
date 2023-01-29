@@ -15,7 +15,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
+    
 	backend.InitMySQLBackend(config.MySQLConfig)
 
 	log.Fatal(http.ListenAndServe(":9000", handler.InitRouter(config.TokenConfig)))
