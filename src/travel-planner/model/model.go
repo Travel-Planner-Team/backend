@@ -59,6 +59,7 @@ type Site struct {
 	Vacation_id  string `json:"vacation_id"`
 	Description  string `json:"description"`
 	Address      string `json:"address"`
+	Url          string `json:"site_url`
 }
 
 type TripSite struct {
@@ -88,30 +89,59 @@ type TripDetails struct {
 }
 
 type Plan struct {
-	Id         string    `json:"id"`
-	Start_date time.Time `json:"start_date"`
-	Duration_days   int64     `json:"duration_days"`
-	VacationId string    `json:"VacationId"`
+	Id            string `json:"id"`
+	Start_date    string `json:"start_date"`
+	Duration_days int64  `json:"duration_days"`
+	VacationId    string `json:"VacationId"`
 }
 
-
 type Activity struct {
-	Id        uint32    `json:"id"`
-	StartTime time.Time `json:"start_time"`
-	EndTime   time.Time `json:"end_time"`
-	Date      time.Time `json:"date"`
-	Duration  int64     `json:"duration"`
-	Site_id   uint32    `json:"site_id"`
+	Id        uint32 `json:"id"`
+	StartTime string `json:"start_time"`
+	EndTime   string `json:"end_time"`
+	Date      string `json:"date"`
+	Duration  int64  `json:"duration"`
+	Site_id   uint32 `json:"site_id"`
 }
 
 type Transportaion struct {
-	Id        uint32    `json:"id"`
-	Type      string    `json:"type"`
-	StartTime time.Time `json:"start_time"`
-	EndTime   time.Time `json:"end_time"`
-	Date      time.Time `json:"date"`
+	Id        uint32 `json:"id"`
+	Type      string `json:"type"`
+	StartTime string `json:"start_time"`
+	EndTime   string `json:"end_time"`
+	Date      string `json:"date"`
 }
 
+type ActivitiesList struct {
+	ActivityID            int    `json:"activity_id"`
+	ActivityName          string `json:"activity_name"`
+	ActivityType          string `json:"activity_type"`
+	ActivityDescription   string `json:"activity_description"`
+	ActivityAddress       string `json:"activity_address"`
+	ActivityPhone         string `json:"activity_phone"`
+	ActivityWebsite       string `json:"activity_website"`
+	ActivityImage         string `json:"activity_image"`
+	ActivityStartDatetime string `json:"activity_start_datetime"`
+	ActivityEndDatetime   string `json:"activity_end_datetime"`
+	ActivityDate          string `json:"activity_date`
+	ActivityDuration      int64  `json:"activity_duration"`
+}
+
+type DaysInfo struct {
+	DayIDX int              `json:"day_idx"`
+	Act    []ActivitiesList `json:"activities"`
+	Trans  []Transportaion  `json:"transportation"`
+}
+
+type PlansInfo struct {
+	PlanIDX int      `json:"plan_idx"`
+	Days    DaysInfo `json:"days"`
+}
+
+type PlanDetail struct {
+	VacationID int         `json:"vacation_id"`
+	Plans      []PlansInfo `json:"plans"`
+}
 
 func (user *User) Validate() *errors.RestErr {
 	user.Username = strings.TrimSpace(user.Username)

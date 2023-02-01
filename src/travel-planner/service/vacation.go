@@ -64,3 +64,28 @@ func GetTransportationFromPlanId(planId uint32) ([]model.Transportaion, error) {
 	return transportations, nil
 }
 
+// func GetSitesFromActivityId(activityId uint32) ([]model.Activity, error) {
+// 	sites, err := backend.DB.GetSitesFromActivityId(activityId)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	if sites == nil || len(sites) == 0 {
+// 		return nil, errors.New("empty or invalid vacations, check the Database")
+// 	}
+// 	return sites, nil
+// }
+
+
+func GetSiteFromSiteyId(siteId uint32) (*model.Site, error) {
+	site, err := backend.DB.GetSiteFromSiteId(siteId)
+	if err != nil {
+		return nil, err
+	}
+
+	if site == nil {
+		return nil, errors.New("empty or invalid vacations, check the Database")
+	}
+	return site, nil
+}
+

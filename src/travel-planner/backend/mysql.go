@@ -136,6 +136,16 @@ func (backend *MySQLBackend) GetTransportationFromPlanId(planId uint32) ([]model
 	return transportations, nil
 }
 
+func (backend *MySQLBackend) GetSiteFromSiteId(siteId uint32) (*model.Site, error) {
+	var site *model.Site
+	result := backend.db.Table("Sites").Where("id = ?", siteId).Find(&site)
+	fmt.Print(site, result)
+	if result.Error != nil {
+		return  nil, result.Error
+	}
+	return site, nil
+}
+
 func (backend *MySQLBackend) GetPlanFromVacationId(vacationId uint32) ([]model.Plan, error) {
 	var plans []model.Plan
 	result := backend.db.Table("Plans").Where("vacation_id = ?", vacationId).Find(&plans)
