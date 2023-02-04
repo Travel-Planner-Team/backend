@@ -23,9 +23,9 @@ func GetImageURL(placeName string) string {
 
 	//placeName := "Empire State Building"
 	placeName = strings.ReplaceAll(placeName, " ", "%")
-	url := "https://maps.googleapis.com/maps/api/place/textsearch/json?query=" + 
-			placeName + 
-			"%in%New%York&&key=AIzaSyAh7k8l1eosOYKu9PwWfQ1NIZ3cuCLXFuM"
+	url := "https://maps.googleapis.com/maps/api/place/textsearch/json?query=" +
+		placeName +
+		"%in%New%York&&key=AIzaSyAh7k8l1eosOYKu9PwWfQ1NIZ3cuCLXFuM"
 	method := "GET"
 
 	client := &http.Client{}
@@ -45,7 +45,14 @@ func GetImageURL(placeName string) string {
 	var place Response
 	decode := json.NewDecoder(res.Body)
 	err = decode.Decode(&place)
-	//fmt.Println(place)
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+	if len(place.Results) < 1 {
+		return ""
+	}
+
 	photoReference := place.Results[0].Photos[0].PhotoReference
 	fmt.Println("Image url: ")
 	imageURL := fmt.Sprintf("https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photoreference=%s&key=%s", photoReference, apiKey)
