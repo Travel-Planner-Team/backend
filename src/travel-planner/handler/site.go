@@ -9,7 +9,6 @@ import (
 	"travel-planner/backend"
 	"travel-planner/model"
 	"travel-planner/service"
-	"travel-planner/util"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
@@ -143,7 +142,7 @@ func AddSiteInVacationHandler(w http.ResponseWriter, r *http.Request) {
 		Latitude:    parsedLatitude,
 		Longitude:   parsedLongitude,
 		SiteUrl:     "blah",
-		ImageUrl:    util.GetImageURL(r.FormValue("siteName")),
+		ImageUrl:    r.FormValue("imageURL"),
 		Id:          uuid.New().ID(),
 	}
 

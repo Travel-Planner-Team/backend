@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"travel-planner/constants"
 	"travel-planner/model"
+	"travel-planner/util"
 )
 
 func SearchDetailFromTrip(sites []model.Site) {
@@ -62,6 +63,8 @@ func SearchDetailFromTrip(sites []model.Site) {
 			value, _ := strconv.ParseFloat(l, 32)
 			item.Longitude = float32(value)
 		}
+
+		item.ImageUrl = util.GetImageURL(item.SiteName)
 
 		fmt.Println(item)
 		//DB.SaveSingleSite(item)
