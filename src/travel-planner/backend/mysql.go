@@ -3,7 +3,6 @@ package backend
 import (
 	"fmt"
 	"travel-planner/constants"
-	"travel-planner/model"
 	"travel-planner/util"
 
 	"gorm.io/driver/mysql"
@@ -30,12 +29,4 @@ func InitMySQLBackend(config *util.MySQLInfo) {
 		panic(err)
 	}
 	DB = &MySQLBackend{db}
-}
-
-func (backend *MySQLBackend) ExampleQueryFunc() error {
-	var users []model.User
-	result := backend.db.Table("Users").Find(&users)
-	fmt.Println(users)
-	fmt.Println(result.RowsAffected)
-	return result.Error
 }
