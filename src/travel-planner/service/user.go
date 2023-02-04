@@ -30,16 +30,17 @@ func CreateUser(user *model.User) (bool, *errors.RestErr) {
 	return true, nil
 }
 
-func CheckUser(userEmail string, password string) (bool, error) {
+func CheckUser(userEmail string, password string) (bool, string, error) {
 	user, err := backend.DB.ReadUserByEmail(userEmail)
 
 	if err != nil {
-		return false, err
+		return false, "", err
 	}
+
 	if user.Password == password {
-		return true, nil
+		return true, fmt.Sprintf("%d", user.Id), nil
 	}
-	return false, nil
+	return false, "", nil
 }
 
 func CheckUserInfo(userID uint32) (*model.User, *errors.RestErr) {

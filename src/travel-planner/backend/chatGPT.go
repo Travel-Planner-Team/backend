@@ -15,8 +15,7 @@ func SearchSitesInChatGPT(query string) ([]model.Site, error) {
 	config, _ := util.LoadApplicationConfig("conf", "chatGPT.yml")
 	c := gogpt.NewClient(config.ChatGPTConfig.Key)
 	ctx := context.Background()
-	// get the config from config file
-	// print client config
+	// get the config from config file, print client config
 	fmt.Println(query)
 
 	req := gogpt.CompletionRequest{
@@ -25,9 +24,8 @@ func SearchSitesInChatGPT(query string) ([]model.Site, error) {
 		Prompt:      query,
 		Temperature: 0,
 	}
-	fmt.Printf("searchSites%v\n", req)
+
 	resp, err := c.CreateCompletion(ctx, req)
-	fmt.Printf("searchSites%v\n", resp)
 
 	if err != nil {
 		fmt.Printf("err: %v\n", err)
@@ -35,7 +33,6 @@ func SearchSitesInChatGPT(query string) ([]model.Site, error) {
 	}
 
 	reply := resp.Choices[0].Text
-	fmt.Println(reply)
 	var sites []model.Site
 
 	// parse rsp_text return a list of string
