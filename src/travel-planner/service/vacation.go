@@ -35,11 +35,6 @@ func GetActivitiesInfoFromPlanId(plan_id uint32) ([]model.Activity, error) {
 	return activities, nil
 }
 
-func GetRoutesFromSites(sites []uint32) (int32, []model.Activity, []model.Transportation) {
-	return backend.DB.GetRoutes(sites)
-
-}
-
 func SaveVacationPlan(plan model.Plan) error {
 	err := backend.DB.SaveVacationPlanToSQL(plan)
 	return err
@@ -85,3 +80,9 @@ func GetTransportationFromPlanId(planId uint32) ([]model.Transportation, error) 
 	}
 	return transportations, nil
 }
+
+
+// deprecated
+// func GetRoutesFromSites(sites []uint32) (int32, []model.Activity, []model.Transportation) {
+// 	return backend.DB.GetRoutes(sites)
+// }

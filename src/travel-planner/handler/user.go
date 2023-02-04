@@ -88,9 +88,9 @@ func SigninHandler(w http.ResponseWriter, r *http.Request) {
 
 	// generate token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"email":          user.Email,
-		"user_id_string": idString,
-		"exp":            time.Now().Add(time.Hour * 24).Unix(),
+		"email": user.Email,
+		"id":    idString,
+		"exp":   time.Now().Add(time.Hour * 24).Unix(),
 	})
 
 	// sign and get the complete encoded token as a string using the secret
