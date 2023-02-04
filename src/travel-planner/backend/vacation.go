@@ -5,9 +5,9 @@ import (
 	"travel-planner/model"
 )
 
-func (backend *MySQLBackend) GetVacations() ([]model.Vacation, error) {
+func (backend *MySQLBackend) GetVacations(userId uint32) ([]model.Vacation, error) {
 	var vacations []model.Vacation
-	result := backend.db.Table("Vacations").Find(&vacations)
+	result := backend.db.Table("Vacations").Where("user_id = ?", userId).Find(&vacations)
 	fmt.Println(vacations, result)
 	if result.Error != nil {
 		return nil, result.Error

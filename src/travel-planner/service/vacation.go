@@ -6,8 +6,8 @@ import (
 	"travel-planner/model"
 )
 
-func GetVacationsInfo() ([]model.Vacation, error) {
-	vacations, err := backend.DB.GetVacations()
+func GetVacationsInfo(userId uint32) ([]model.Vacation, error) {
+	vacations, err := backend.DB.GetVacations(userId)
 	if err != nil {
 		return nil, err
 	}

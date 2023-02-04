@@ -9,6 +9,7 @@ import (
 	"travel-planner/model"
 	"travel-planner/service"
 
+	jwt "github.com/form3tech-oss/jwt-go"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
@@ -17,7 +18,14 @@ func GetVacationsHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Received request: /vacation")
 	w.Header().Set("Content-Type", "application/json")
 
-	vacations, err := service.GetVacationsInfo()
+	user := r.Context().Value("user")
+	claims := user.(*jwt.Token).Claims
+	userStringId := claims.(jwt.MapClaims)["user_id_string"].(string)
+
+	siteIdInt, _ := strconv.ParseInt(userStringId, 0, 64)
+	userId := uint32(siteIdInt)
+	
+	vacations, err := service.GetVacationsInfo(userId)
 	if err != nil {
 		http.Error(w, "Fail to read vacation info from backend", http.StatusInternalServerError)
 		return
@@ -56,7 +64,6 @@ func SaveVacationsHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Fail to save vacation into DB", http.StatusInternalServerError)
 		return
 	}
-	w.Write([]byte("Vacation saved: " + fmt.Sprint(vacation.Id)))
 	w.Write(js)
 }
 
