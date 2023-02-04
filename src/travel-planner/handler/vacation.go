@@ -112,7 +112,7 @@ func GetVacationPlanHandler(w http.ResponseWriter, r *http.Request) {
 			activityList := model.ActivitiesList{
 				ActivityID:            activity.Id,
 				ActivityName:          site.SiteName,
-				ActivityType:          "type",
+				ActivityType:          "Site",
 				ActivityDescription:   site.Description,
 				ActivityAddress:       site.Address,
 				ActivityPhone:         site.PhoneNumber,
@@ -122,6 +122,8 @@ func GetVacationPlanHandler(w http.ResponseWriter, r *http.Request) {
 				ActivityEndDatetime:   activity.EndTime,
 				ActivityDate:          activity.Date,
 				ActivityDuration:      activity.DurationHrs,
+				ActivityLongitude: 	   site.Longitude,
+				ActivityLatitude: 	   site.Latitude,
 			}
 
 			totalActList = append(totalActList, activityList)
@@ -133,16 +135,15 @@ func GetVacationPlanHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		var transportationsList []model.TransportationList
+		var transportationsList []model.ActivitiesList
 		for _, trans := range transportations {
-			transResponse := model.TransportationList{
-				TransportationId:          trans.Id,
-				TransportationType:        trans.Type,
-				TransportationStartTime:   trans.StartTime,
-				TransportationEndTime:     trans.EndTime,
-				TransportationDate:        trans.Date,
-				TransportationDurationHrs: trans.DurationHrs,
-				TransportationPlanId:      trans.PlanId,
+			transResponse := model.ActivitiesList{
+				ActivityID:            trans.Id,
+				ActivityType:          "Transportation",
+				ActivityStartDatetime: trans.StartTime,
+				ActivityEndDatetime:   trans.EndTime,
+				ActivityDate:          trans.Date,
+				ActivityDuration:      trans.DurationHrs,
 			}
 			transportationsList = append(transportationsList, transResponse)
 		}
@@ -152,37 +153,35 @@ func GetVacationPlanHandler(w http.ResponseWriter, r *http.Request) {
 		nActs := len(totalActList)
 		nTrans := len(transportationsList)
 		var currentActlist []model.ActivitiesList
-		var currentTransportationList []model.TransportationList
 		var daysInfoList []model.DayInfo
 
 		for idx, activity := range totalActList {
 			if (idx > 0) && (activity.ActivityDate.After(totalActList[idx-1].ActivityDate)) {
-				dayInfo := model.DayInfo{DayIDX: dayIdx, Act: currentActlist, Trans: currentTransportationList}
+				dayInfo := model.DayInfo{DayIDX: dayIdx, Act: currentActlist}
 				daysInfoList = append(daysInfoList, dayInfo)
 				dayIdx++
 				currentActlist = make([]model.ActivitiesList, 0)
-				currentTransportationList = make([]model.TransportationList, 0)
 				fmt.Println(daysInfoList)
 			}
 			fmt.Println(idx)
 			currentActlist = append(currentActlist, activity)
 			if (transportationIdx < nTrans) && (idx < nActs-1) &&
-				(transportationsList[transportationIdx].TransportationDate.Equal(activity.ActivityDate)) {
-				transportationsList[transportationIdx].TransportationStartAddress = activity.ActivityName
-				transportationsList[transportationIdx].TransportationEndAddress = totalActList[idx+1].ActivityName
+				(transportationsList[transportationIdx].ActivityDate.Equal(activity.ActivityDate)) {
+				transportationsList[transportationIdx].ActivityStartAddress = activity.ActivityAddress
+				transportationsList[transportationIdx].ActivityEndAddress = totalActList[idx+1].ActivityAddress
 
-				currentTransportationList = append(currentTransportationList, transportationsList[transportationIdx])
+				currentActlist = append(currentActlist, transportationsList[transportationIdx])
 				transportationIdx++
 			}
 		}
 
-		dayInfo := model.DayInfo{dayIdx, currentActlist, currentTransportationList}
+		dayInfo := model.DayInfo{DayIDX: dayIdx, Act: currentActlist}
 		daysInfoList = append(daysInfoList, dayInfo)
 
-		plansInfo = append(plansInfo, model.PlansInfo{parsedPlanId, daysInfoList})
+		plansInfo = append(plansInfo, model.PlansInfo{PlanIDX: parsedPlanId, Days: daysInfoList})
 	}
 
-	planDetail := model.PlanDetail{parsedVacationId, plansInfo}
+	planDetail := model.PlanDetail{VacationID: parsedVacationId, Plans: plansInfo}
 	jsonData, err := json.Marshal(planDetail)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -141,6 +141,10 @@ type ActivitiesList struct {
 	ActivityEndDatetime   time.Time `json:"activity_end_datetime"`
 	ActivityDate          time.Time `json:"activity_date"`
 	ActivityDuration      float32   `json:"activity_duration"`
+	ActivityStartAddress  string    `json:"activity_start_address"`
+	ActivityEndAddress    string    `json:"activity_end_address"`
+	ActivityLongitude     float32   `json:"activity_longitude"`
+	ActivityLatitude      float32   `json:"activity_latitude"`
 }
 
 type TransportationList struct {
@@ -156,9 +160,9 @@ type TransportationList struct {
 }
 
 type DayInfo struct {
-	DayIDX int              `json:"day_idx"`
-	Act    []ActivitiesList `json:"activities"`
-	Trans  []TransportationList `json:"transportation"`
+	DayIDX int                  `json:"day_idx"`
+	Act    []ActivitiesList     `json:"activities"`
+	// Trans  []TransportationList `json:"transportation"`
 }
 
 type PlansInfo struct {
