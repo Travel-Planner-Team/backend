@@ -76,7 +76,7 @@ func GetVacationPlanHandler(w http.ResponseWriter, r *http.Request) {
 	intId, _ := strconv.ParseInt(vacationID, 0, 64)
 	parsedVacationId := uint32(intId)
 	// make plans
-	GetPlanHandler(w, r)
+	//GetPlanHandler(w, r)
 
 	// get plans
 	plans, err := service.GetPlanInfoFromVactionId(parsedVacationId)
