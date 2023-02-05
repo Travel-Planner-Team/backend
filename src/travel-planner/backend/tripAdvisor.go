@@ -13,63 +13,133 @@ import (
 )
 
 func SearchDetailFromTrip(sites []model.Site) {
-	for key, item := range sites {
-		fmt.Printf("Sitename:%v\n", item.SiteName)
-		location := GetSearchTripAdvisor(item.SiteName)
-		if location == nil {
-			continue
-		}
-		location_id := location.LocationId
+	sitesChannel := make(chan model.Site)
+	for _, item := range sites {
+		go func(item model.Site) {
+			fmt.Printf("Sitename:%v\n", item.SiteName)
+			location := GetSearchTripAdvisor(item.SiteName)
+			if location == nil {
+				return
+			}
+			location_id := location.LocationId
 
-		res := GetDetailsWithLocationId(location_id)
+			res := GetDetailsWithLocationId(location_id)
 
-		if res == "" {
-			continue
-		}
+			if res == "" {
+				return
+			}
 
-		resBytes := []byte(res)                // Converting the string "res" into byte array
-		var jsonRes map[string]interface{}     // declaring a map for key names as string and values as interface
-		_ = json.Unmarshal(resBytes, &jsonRes) // Unmarshalling
+			resBytes := []byte(res)                // Converting the string "res" into byte array
+			var jsonRes map[string]interface{}     // declaring a map for key names as string and values as interface
+			_ = json.Unmarshal(resBytes, &jsonRes) // Unmarshalling
 
-		if jsonRes == nil {
-			continue
-		}
+			if jsonRes == nil {
+				return
+			}
 
-		if jsonRes["description"] != nil {
-			item.Description = jsonRes["description"].(string)
-		}
+			if jsonRes["description"] != nil {
+				item.Description = jsonRes["description"].(string)
+			}
 
-		if jsonRes["phone"] != nil {
-			item.PhoneNumber = jsonRes["phone"].(string)
-		}
+			if jsonRes["phone"] != nil {
+				item.PhoneNumber = jsonRes["phone"].(string)
+			}
 
-		if jsonRes["rating"] != nil {
-			item.Rating = jsonRes["rating"].(string)
-		}
+			if jsonRes["rating"] != nil {
+				item.Rating = jsonRes["rating"].(string)
+			}
 
-		if jsonRes["address_obj"] != nil {
-			details_Address := jsonRes["address_obj"].(map[string]interface{})
-			item.Address = details_Address["address_string"].(string)
-		}
+			if jsonRes["address_obj"] != nil {
+				details_Address := jsonRes["address_obj"].(map[string]interface{})
+				item.Address = details_Address["address_string"].(string)
+			}
 
-		if jsonRes["latitude"] != nil {
-			var l = jsonRes["latitude"].(string)
-			value, _ := strconv.ParseFloat(l, 32)
-			item.Latitude = float32(value)
-		}
+			if jsonRes["latitude"] != nil {
+				var l = jsonRes["latitude"].(string)
+				value, _ := strconv.ParseFloat(l, 32)
+				item.Latitude = float32(value)
+			}
 
-		if jsonRes["longitude"] != nil {
-			var l = jsonRes["longitude"].(string)
-			value, _ := strconv.ParseFloat(l, 32)
-			item.Longitude = float32(value)
-		}
+			if jsonRes["longitude"] != nil {
+				var l = jsonRes["longitude"].(string)
+				value, _ := strconv.ParseFloat(l, 32)
+				item.Longitude = float32(value)
+			}
 
-		item.ImageUrl = util.GetImageURL(item.SiteName)
+			item.ImageUrl = util.GetImageURL(item.SiteName)
 
-		fmt.Println(item)
-		//DB.SaveSingleSite(item)
-		sites[key] = item
+			fmt.Println(item)
+			//DB.SaveSingleSite(item)
+			sitesChannel <- item
+		}(item)
 	}
+
+	for range sites {
+		updatedSite := <-sitesChannel
+		for i, item := range sites {
+			if item.SiteName == updatedSite.SiteName {
+				sites[i] = updatedSite
+				break
+			}
+		}
+	}
+	//for key, item := range sites {
+	//	fmt.Printf("Sitename:%v\n", item.SiteName)
+	//	location := GetSearchTripAdvisor(item.SiteName)
+	//	if location == nil {
+	//		continue
+	//	}
+	//	location_id := location.LocationId
+	//
+	//	res := GetDetailsWithLocationId(location_id)
+	//
+	//	if res == "" {
+	//		continue
+	//	}
+	//
+	//	resBytes := []byte(res)                // Converting the string "res" into byte array
+	//	var jsonRes map[string]interface{}     // declaring a map for key names as string and values as interface
+	//	_ = json.Unmarshal(resBytes, &jsonRes) // Unmarshalling
+	//
+	//	if jsonRes == nil {
+	//		continue
+	//	}
+	//
+	//	if jsonRes["description"] != nil {
+	//		item.Description = jsonRes["description"].(string)
+	//	}
+	//
+	//	if jsonRes["phone"] != nil {
+	//		item.PhoneNumber = jsonRes["phone"].(string)
+	//	}
+	//
+	//	if jsonRes["rating"] != nil {
+	//		item.Rating = jsonRes["rating"].(string)
+	//	}
+	//
+	//	if jsonRes["address_obj"] != nil {
+	//		details_Address := jsonRes["address_obj"].(map[string]interface{})
+	//		item.Address = details_Address["address_string"].(string)
+	//	}
+	//
+	//	if jsonRes["latitude"] != nil {
+	//		var l = jsonRes["latitude"].(string)
+	//		value, _ := strconv.ParseFloat(l, 32)
+	//		item.Latitude = float32(value)
+	//	}
+	//
+	//	if jsonRes["longitude"] != nil {
+	//		var l = jsonRes["longitude"].(string)
+	//		value, _ := strconv.ParseFloat(l, 32)
+	//		item.Longitude = float32(value)
+	//	}
+	//
+	//	item.ImageUrl = util.GetImageURL(item.SiteName)
+	//
+	//	fmt.Println(item)
+	//	//DB.SaveSingleSite(item)
+	//	sites[key] = item
+	//}
 }
 func GetSearchTripAdvisor(name string) *model.TripSite {
 	url := getUrl(name)
