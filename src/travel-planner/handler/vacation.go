@@ -20,7 +20,7 @@ func GetVacationsHandler(w http.ResponseWriter, r *http.Request) {
 
 	user := r.Context().Value("user")
 	claims := user.(*jwt.Token).Claims
-	userStringId := claims.(jwt.MapClaims)["user_id_string"].(string)
+	userStringId := claims.(jwt.MapClaims)["id"].(string)
 
 	siteIdInt, _ := strconv.ParseInt(userStringId, 0, 64)
 	userId := uint32(siteIdInt)
